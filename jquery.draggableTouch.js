@@ -31,6 +31,17 @@
         this.each(function() {
             var element = $(this);
             var offset = null;
+            var bounder = $(action);
+            var limit_top = null;
+            var limit_left = null;
+            var limit_bottom = null;
+            var limit_right = null;
+            if(bounder != null && bounder != "disable"){
+            	limit_top = bounder.offset().top;
+            	limit_left = bounder.offset().left;
+            	limit_bottom = bounder.offset().top + bounder.height();
+            	limit_right = bounder.offset().left + bounder.width();
+            }
             
             var end = function(e) {
                 e.preventDefault();
@@ -63,6 +74,30 @@
                     top: orig.changedTouches[0].pageY - offset.y,
                     left: orig.changedTouches[0].pageX - offset.x
                 });
+                
+                if(bounder != null){
+	                $("#ctrl_center").text("top : " + element.offset().top);
+	                var eTop = $(this).offset().top;
+	                var eLeft = $(this).offset().left;
+	                var eBottom = $(this).offset().top + element.height();
+	                var eRight = $(this).offset().left + element.width();
+	                if(eTop <= limit_top){
+	                	if($(this).css('position') == 'absolute') $(this).css('top', '0px');
+	                	else $(this).css('top', bounder.offset().top + 'px');
+	                }
+	                if(eLeft <= limit_left){
+	                	if($(this).css('position') == 'absolute') $(this).css('left', '0px');
+	                	else $(this).css('left', bounder.offset().left + 'px');
+	                }
+	                if(eBottom >= limit_bottom){
+	                	if($(this).css('position') == 'absolute') $(this).css('top', (bounder.height() - $(this).height()) + 'px');
+	                	else $(this).css('top', (bounder.offset().top + bounder.height() - $(this).height()) + 'px');
+	                }
+	                if(eRight >= limit_right){
+	                	if($(this).css('position') == 'absolute') $(this).css('left', (bounder.width() - $(this).width()) + 'px');
+	                	else $(this).css('top', (bounder.offset().left + bounder.width() - $(this).width()) + 'px');
+	                }
+	            }
             });
             element.bind("touchend", end);
             element.bind("touchcancel", end);
